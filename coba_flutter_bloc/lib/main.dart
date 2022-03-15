@@ -1,3 +1,4 @@
+import 'package:coba_flutter_bloc/color_bloc.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -7,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,6 +29,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ColorBloc bloc = ColorBloc();
+
+  @override
+  void dispose() {
+    bloc.dispose;
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,25 +44,34 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: AnimatedContainer(
-          height: 100,
-          width: 100,
-          color: Colors.deepOrange,
-          duration: const Duration(milliseconds: 100),
-        ),
-      ),
+          child: StreamBuilder<Color>(
+        stream: bloc.stateStream,
+        initialData: Colors.deepOrange,
+        builder: (context, snapshot) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: 100,
+            width: 100,
+            color: snapshot.data,
+          );
+        },
+      )),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              bloc.eventSink.add(ColorEvent.toDeepOrange);
+            },
             backgroundColor: Colors.deepOrange,
           ),
           const SizedBox(
             width: 10,
           ),
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              bloc.eventSink.add(ColorEvent.toBlueAccent);
+            },
             backgroundColor: Colors.blueAccent,
           ),
         ],
